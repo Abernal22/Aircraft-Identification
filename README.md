@@ -1,208 +1,254 @@
-# ✈️ Aircraft Identification Using Deep Learning
+#  Military Aircraft Identification Using Deep Learning
 
-## 📌 Overview
+## Overview
 
-Aircraft identification is a challenging computer vision problem due to significant variability in real-world conditions such as viewpoint, lighting, scale, and background clutter. This project develops a deep learning-based system to classify aircraft images while addressing these challenges, with a particular focus on **multi-angle robustness**.
+This project focuses on **fine-grained visual classification (FGVC)** of aircraft using deep learning. The goal is to develop a robust computer vision system capable of identifying aircraft under **real-world conditions**, including variations in:
 
-The system leverages convolutional neural networks (CNNs) and transfer learning techniques to improve classification performance across diverse visual conditions.
+* Viewpoint (front, side, top, diagonal)
+* Lighting and weather
+* Background clutter
+* Image resolution
 
----
-
-## 🎯 Objectives
-
-* Build a diverse dataset of aircraft images from multiple viewpoints
-* Implement a **baseline CNN model** trained from scratch
-* Apply **transfer learning (ResNet50, EfficientNet)**
-* Analyze the impact of viewpoint diversity on classification accuracy
-* Evaluate performance using standard classification metrics
+The project specifically targets **military aircraft recognition**, where models must distinguish between visually similar aircraft using subtle structural features rather than color or texture.
 
 ---
 
-## 🧠 Approach
+## Objectives
 
-### 1. Data Collection
+* Build a complete deep learning pipeline for aircraft classification
+* Investigate the impact of **multi-angle image data** on model performance
+* Compare multiple architectures:
 
-Datasets are collected from:
-
-* Kaggle (Military Aircraft Detection Dataset)
-* FGVC Aircraft Dataset
-* Public web sources (Google Images)
-
-The dataset includes:
-
-* Military aircraft
-* Commercial aircraft
-* Propeller planes
-* Jet aircraft
+  * Custom CNN (baseline)
+  * ResNet50 (transfer learning)
+  * EfficientNet-B0
+  * Vision Transformer (ViT)
+* Evaluate trade-offs between **accuracy and computational efficiency**
+* Improve robustness using **advanced data augmentation techniques**
 
 ---
 
-### 2. Data Preprocessing
+## Key Features
 
-All images undergo:
+* Multi-angle dataset design
+* Advanced augmentation:
 
-* Resizing to **224 × 224**
-* Normalization to [0,1]
-* Data augmentation:
+  * Random Erasing
+  * CutMix (planned)
+  * MixUp (planned)
+* Modular PyTorch pipeline
+* Config-driven training
+* Evaluation using:
 
-  * Rotation
-  * Horizontal flipping
-  * Brightness variation
-
----
-
-### 3. Model Architectures
-
-#### 🔹 Baseline Model
-
-A custom CNN trained from scratch:
-
-* Convolutional layers
-* ReLU activations
-* Max pooling
-* Fully connected layers
-
-#### 🔹 Transfer Learning Models
-
-* ResNet50
-* EfficientNet
-
-These models use pretrained ImageNet weights to improve generalization and reduce training time.
+  * Accuracy
+  * Precision / Recall
+  * F1-score
+  * Confusion Matrix
 
 ---
 
-### 4. Training Pipeline
-
-1. Load and preprocess dataset
-2. Split into:
-
-   * 70% Training
-   * 15% Validation
-   * 15% Testing
-3. Train model using mini-batch gradient descent
-4. Validate performance each epoch
-5. Test final model on unseen data
-
----
-
-## 📊 Evaluation Metrics
-
-* Accuracy
-* Precision
-* Recall
-* F1-Score
-* Confusion Matrix
-
----
-
-## 🗂️ Project Structure
+## Project Structure
 
 ```
 Aircraft-Identification/
 │
+├── configs/                # Configuration files (hyperparameters)
+│   └── config.yaml
+│
 ├── data/
-│   ├── raw/                # Original datasets
-│   ├── processed/          # Cleaned and resized images
+│   └── processed/          # Train / Val / Test datasets
+│       ├── train/
+│       ├── val/
+│       └── test/
 │
-├── notebooks/              # Jupyter notebooks for exploration
-│   ├── exploration.ipynb
+├── models/                 # Saved model weights
 │
-├── src/
+├── notebooks/              # Experiments and visualization
+│
+├── outputs/                # Results (plots, metrics, confusion matrices)
+│
+├── src/                    # Core source code
+│   ├── augmentations.py    # Data augmentation pipeline
 │   ├── data_loader.py      # Dataset loading
-│   ├── preprocessing.py    # Image transformations
-│   ├── model.py            # CNN + transfer models
+│   ├── evaluate.py         # Model evaluation
+│   ├── model.py            # Model definitions
 │   ├── train.py            # Training script
-│   ├── evaluate.py         # Evaluation script
-│
-├── results/
-│   ├── plots/              # Graphs and visualizations
-│   ├── metrics/            # Saved evaluation metrics
+│   └── utils.py            # Utility functions
 │
 ├── README.md
-├── requirements.txt
-└── .gitignore
+└── requirements.txt
 ```
 
 ---
 
-## ⚙️ Installation
+## Dataset
 
-Clone the repository and install dependencies:
+The dataset is constructed from publicly available aircraft images, including the:
 
-```
+* Military Aircraft Detection Dataset (Kaggle)
+
+Classes (current baseline):
+
+* `military`
+* `non_military`
+
+Future extension:
+
+* F-16
+* F/A-18
+* C-130
+* A-10
+
+Dataset split:
+
+* **70% Training**
+* **15% Validation**
+* **15% Testing**
+
+---
+
+##  Installation
+
+Clone the repository:
+
+```bash
 git clone https://github.com/your-username/Aircraft-Identification.git
 cd Aircraft-Identification
+```
 
-python -m venv venv
-source venv/bin/activate      # Windows: .\venv\Scripts\activate
+Install dependencies:
 
+```bash
 pip install -r requirements.txt
 ```
 
 ---
 
-## ▶️ Usage
+## How to Run
 
-### Train the Model
+### 1. Train the Model
 
-```
+```bash
 python src/train.py
 ```
 
-### Evaluate the Model
+This will:
 
-```
+* Load dataset
+* Train the model
+* Save weights to `/models`
+
+---
+
+### 2. Evaluate the Model
+
+```bash
 python src/evaluate.py
 ```
 
----
+This will output:
 
-## 📈 Expected Results
-
-* Improved accuracy using transfer learning
-* Stronger generalization across viewpoints
-* Better robustness to real-world conditions
+* Confusion matrix
+* Precision / Recall / F1-score
 
 ---
 
-## 🚧 Project Status
+## ⚙️ Configuration
 
-* [x] Proposal completed
-* [ ] Dataset collection
-* [ ] Data preprocessing
-* [ ] Baseline CNN implementation
-* [ ] Transfer learning models
-* [ ] Training and evaluation
-* [ ] Results analysis
+All hyperparameters are controlled via:
+
+```
+configs/config.yaml
+```
+
+Example:
+
+```yaml
+batch_size: 32
+learning_rate: 0.001
+epochs: 10
+image_size: 224
+num_classes: 2
+model_name: cnn
+```
 
 ---
 
-## 👥 Team Members
+## Models
+
+### Baseline
+
+* Custom CNN (implemented)
+
+### Transfer Learning (Planned / In Progress)
+
+* ResNet50
+* EfficientNet-B0
+
+### Advanced Model (Planned)
+
+* Vision Transformer (ViT)
+
+---
+
+##  Evaluation Metrics
+
+The model is evaluated using:
+
+* Accuracy
+* Precision
+* Recall
+* F1-score
+* Confusion Matrix
+
+These metrics help analyze performance under **real-world variability and class imbalance**.
+
+---
+
+##  Research Focus
+
+This project investigates:
+
+* Viewpoint invariance in deep learning
+* Impact of dataset diversity
+* Overfitting to background vs aircraft features
+* Model efficiency vs accuracy trade-offs
+
+---
+
+##  Future Work
+
+* Implement CutMix and MixUp augmentation
+* Add ResNet50 and EfficientNet training
+* Introduce fine-grained aircraft classification
+* Hyperparameter tuning
+* GPU acceleration
+* Deployment as a web application
+
+---
+
+## Authors
 
 * Alexander Bernal
 * Aaron Majdali
 * Tess Breckenridge
 * Artip Nakchinda
 
+University of New Mexico
+
 ---
 
-## 📚 References
+## License
 
-* FGVC Aircraft Dataset
-* Military Aircraft Detection Dataset (Kaggle)
+This project is for academic and research purposes.
+
+---
+
+## References
+
+* Kaggle Military Aircraft Dataset
 * PyTorch Documentation
 * ImageNet Pretrained Models
+* Research papers on FGVC and aircraft classification
 
 ---
-
-## 🔮 Future Work
-
-* Multi-task learning (aircraft + viewpoint classification)
-* Object detection (YOLO, Faster R-CNN)
-* Real-time aircraft recognition system
-
----
-
-## 📄 License
-
-This project is intended for academic use.
